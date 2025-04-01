@@ -422,6 +422,7 @@ function setupCarButtons() {
     
     if (addCarBtn && carModal) {
         addCarBtn.addEventListener('click', function() {
+            console.log('Đã bấm nút thêm xe mới');
             // Reset form và tiêu đề modal
             const carForm = document.getElementById('carForm');
             const modalTitle = document.getElementById('carModalTitle');
@@ -465,32 +466,39 @@ function setupCarModal() {
     const modal = document.getElementById('carModal');
     const closeBtn = modal?.querySelector('.close');
     const carForm = document.getElementById('carForm');
-    const closeModalButtons = document.querySelectorAll('.close-modal');
+    const closeModalButtons = modal?.querySelectorAll('.close-modal');
+    
+    if (!modal) {
+        console.error('Không tìm thấy modal xe');
+        return;
+    }
     
     // Thiết lập nút đóng modal
     if (closeBtn) {
         closeBtn.addEventListener('click', function() {
+            console.log('Đóng modal xe bằng nút X');
             modal.style.display = 'none';
-            carForm.reset();
-            delete carForm.dataset.editId;
+            if (carForm) carForm.reset();
         });
     }
     
     // Thiết lập các nút "Hủy"
-    closeModalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            modal.style.display = 'none';
-            carForm.reset();
-            delete carForm.dataset.editId;
+    if (closeModalButtons && closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('Đóng modal xe bằng nút Hủy');
+                modal.style.display = 'none';
+                if (carForm) carForm.reset();
+            });
         });
-    });
+    }
     
     // Đóng modal khi click bên ngoài
     window.addEventListener('click', function(e) {
         if (e.target === modal) {
+            console.log('Đóng modal xe bằng click bên ngoài');
             modal.style.display = 'none';
-            carForm.reset();
-            delete carForm.dataset.editId;
+            if (carForm) carForm.reset();
         }
     });
     
@@ -507,7 +515,7 @@ function setupCarModal() {
                 year: document.getElementById('carYear').value,
                 plate: document.getElementById('carPlate').value,
                 color: document.getElementById('carColor').value,
-                status: 'available' // Mặc định là sẵn có
+                status: document.getElementById('carStatus').value
             };
             
             // Lấy danh sách xe hiện tại
@@ -541,6 +549,9 @@ function setupCarModal() {
             
             // Cập nhật lại danh sách xe
             displayCarsList();
+            
+            // Cập nhật thống kê trên dashboard
+            updateDashboardStats();
         });
     }
 }
@@ -549,12 +560,26 @@ function setupCarModal() {
 function setupRentalsPage() {
     // Thiết lập nút thêm đơn thuê mới
     const addRentalBtn = document.getElementById('addRentalBtn');
-    if (addRentalBtn) {
+    const rentalModal = document.getElementById('rentalModal');
+    
+    if (addRentalBtn && rentalModal) {
         addRentalBtn.addEventListener('click', function() {
-            const modal = document.getElementById('rentalModal');
-            if (modal) {
-                modal.style.display = 'block';
+            console.log('Đã bấm nút thêm đơn thuê mới');
+            // Reset form và tiêu đề modal
+            const rentalForm = document.getElementById('rentalForm');
+            if (rentalForm) {
+                rentalForm.reset();
+                delete rentalForm.dataset.editId;
+                
+                // Tự động tạo ID cho đơn thuê mới
+                const rentalId = document.getElementById('rentalId');
+                if (rentalId) {
+                    rentalId.value = 'R' + Date.now().toString().slice(-6);
+                }
             }
+            
+            // Hiển thị modal
+            rentalModal.style.display = 'block';
         });
     }
     
@@ -573,32 +598,39 @@ function setupRentalModal() {
     const modal = document.getElementById('rentalModal');
     const closeBtn = modal?.querySelector('.close');
     const rentalForm = document.getElementById('rentalForm');
-    const closeModalButtons = document.querySelectorAll('.close-modal');
+    const closeModalButtons = modal?.querySelectorAll('.close-modal');
+    
+    if (!modal) {
+        console.error('Không tìm thấy modal đơn thuê');
+        return;
+    }
     
     // Thiết lập nút đóng modal
     if (closeBtn) {
         closeBtn.addEventListener('click', function() {
+            console.log('Đóng modal đơn thuê bằng nút X');
             modal.style.display = 'none';
-            rentalForm.reset();
-            delete rentalForm.dataset.editId;
+            if (rentalForm) rentalForm.reset();
         });
     }
     
     // Thiết lập các nút "Hủy"
-    closeModalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            modal.style.display = 'none';
-            rentalForm.reset();
-            delete rentalForm.dataset.editId;
+    if (closeModalButtons && closeModalButtons.length > 0) {
+        closeModalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('Đóng modal đơn thuê bằng nút Hủy');
+                modal.style.display = 'none';
+                if (rentalForm) rentalForm.reset();
+            });
         });
-    });
+    }
     
     // Đóng modal khi click bên ngoài
     window.addEventListener('click', function(e) {
         if (e.target === modal) {
+            console.log('Đóng modal đơn thuê bằng click bên ngoài');
             modal.style.display = 'none';
-            rentalForm.reset();
-            delete rentalForm.dataset.editId;
+            if (rentalForm) rentalForm.reset();
         }
     });
     
@@ -607,48 +639,102 @@ function setupRentalModal() {
         rentalForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Lấy dữ liệu từ form
-            const rentalData = {
-                id: document.getElementById('rentalId').value,
-                customer: document.getElementById('customerName').value,
-                car: document.getElementById('carName').value,
-                startDate: document.getElementById('startDate').value,
-                endDate: document.getElementById('endDate').value,
-                totalAmount: document.getElementById('totalAmount').value,
-                status: document.getElementById('rentalStatus').value
-            };
-            
-            // Lấy danh sách đơn thuê hiện tại
-            const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
-            
-            // Kiểm tra xem là thêm mới hay chỉnh sửa
-            const editId = this.dataset.editId;
-            if (editId) {
-                // Cập nhật đơn thuê hiện có
-                const index = rentals.findIndex(r => r.id === editId);
-                if (index !== -1) {
-                    rentals[index] = rentalData;
+            try {
+                // Kiểm tra các trường bắt buộc
+                const requiredFields = ['rentalId', 'customerName', 'carName', 'startDate', 'endDate'];
+                const missingFields = requiredFields.filter(field => !document.getElementById(field)?.value);
+                
+                if (missingFields.length > 0) {
+                    const fieldNames = {
+                        'rentalId': 'Mã đơn',
+                        'customerName': 'Tên khách hàng',
+                        'carName': 'Xe',
+                        'startDate': 'Ngày thuê',
+                        'endDate': 'Ngày trả'
+                    };
+                    
+                    const missingFieldNames = missingFields.map(field => fieldNames[field] || field);
+                    alert(`Vui lòng điền đầy đủ thông tin: ${missingFieldNames.join(', ')}`);
+                    return;
                 }
-            } else {
-                // Thêm đơn thuê mới
-                rentals.push(rentalData);
+                
+                // Kiểm tra ngày trả không sớm hơn ngày thuê
+                const startDate = new Date(document.getElementById('startDate').value);
+                const endDate = new Date(document.getElementById('endDate').value);
+                
+                if (endDate < startDate) {
+                    alert('Ngày trả không thể sớm hơn ngày thuê!');
+                    return;
+                }
+                
+                // Lấy dữ liệu từ form
+                const rentalIdValue = document.getElementById('rentalId').value;
+                const customerNameValue = document.getElementById('customerName').value;
+                const carNameValue = document.getElementById('carName').value;
+                const startDateValue = document.getElementById('startDate').value;
+                const endDateValue = document.getElementById('endDate').value;
+                const totalAmountValue = document.getElementById('totalAmount').value || 0;
+                const statusValue = document.getElementById('rentalStatus').value || 'active';
+                
+                const rentalData = {
+                    id: rentalIdValue.startsWith('R') ? rentalIdValue : 'R' + rentalIdValue,
+                    customerName: customerNameValue,
+                    carName: carNameValue,
+                    startDate: startDateValue,
+                    endDate: endDateValue,
+                    totalAmount: Number(totalAmountValue),
+                    status: statusValue
+                };
+                
+                // Lấy danh sách đơn thuê hiện tại
+                const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
+                
+                // Kiểm tra xem là thêm mới hay chỉnh sửa
+                const editId = this.dataset.editId;
+                if (editId) {
+                    // Cập nhật đơn thuê hiện có
+                    const index = rentals.findIndex(r => r.id === editId);
+                    if (index !== -1) {
+                        console.log('Cập nhật đơn thuê:', editId);
+                        rentals[index] = rentalData;
+                        alert('Cập nhật đơn thuê thành công!');
+                    } else {
+                        console.error('Không tìm thấy đơn thuê để cập nhật:', editId);
+                        alert('Không tìm thấy đơn thuê cần cập nhật!');
+                        return;
+                    }
+                } else {
+                    // Kiểm tra trùng ID nếu thêm mới
+                    if (rentals.some(r => r.id === rentalData.id)) {
+                        alert(`Mã đơn ${rentalData.id} đã tồn tại! Vui lòng sử dụng mã khác.`);
+                        return;
+                    }
+                    
+                    // Thêm đơn thuê mới
+                    console.log('Thêm đơn thuê mới:', rentalData.id);
+                    rentals.push(rentalData);
+                    alert('Thêm đơn thuê mới thành công!');
+                }
+                
+                // Lưu lại vào localStorage
+                localStorage.setItem('rentals', JSON.stringify(rentals));
+                
+                // Đóng modal
+                modal.style.display = 'none';
+                
+                // Reset form và xóa ID đang chỉnh sửa
+                rentalForm.reset();
+                delete rentalForm.dataset.editId;
+                
+                // Cập nhật lại danh sách đơn thuê
+                displayRentalsList('all');
+                
+                // Cập nhật thống kê trên dashboard
+                updateDashboardStats();
+            } catch (error) {
+                console.error('Lỗi khi lưu đơn thuê:', error);
+                alert('Lỗi khi lưu đơn thuê: ' + error.message);
             }
-            
-            // Lưu lại vào localStorage
-            localStorage.setItem('rentals', JSON.stringify(rentals));
-            
-            // Hiển thị thông báo thành công
-            alert(editId ? 'Cập nhật đơn thuê thành công!' : 'Thêm đơn thuê mới thành công!');
-            
-            // Đóng modal
-            modal.style.display = 'none';
-            
-            // Reset form và xóa ID đang chỉnh sửa
-            rentalForm.reset();
-            delete rentalForm.dataset.editId;
-            
-            // Cập nhật lại danh sách đơn thuê
-            displayRentalsList('all');
         });
     }
 }
@@ -751,34 +837,42 @@ function viewRental(rentalId) {
 
 // Chỉnh sửa đơn thuê
 function editRental(rentalId) {
+    console.log('Đang chỉnh sửa đơn thuê:', rentalId);
     const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
     const rental = rentals.find(r => r.id === rentalId);
     
     if (rental) {
         // Lấy modal và form
         const modal = document.getElementById('rentalModal');
-        const modalTitle = document.getElementById('rentalModalTitle');
         const rentalForm = document.getElementById('rentalForm');
         
-        // Đặt tiêu đề modal
-        modalTitle.textContent = 'Chỉnh sửa đơn thuê';
+        if (!modal || !rentalForm) {
+            console.error('Không tìm thấy modal hoặc form đơn thuê');
+            return;
+        }
+        
+        // Cập nhật tiêu đề modal nếu có
+        const modalTitle = modal.querySelector('h2');
+        if (modalTitle) {
+            modalTitle.textContent = 'Chỉnh sửa đơn thuê';
+        }
         
         // Điền thông tin hiện tại vào form
         document.getElementById('rentalId').value = rental.id;
-        document.getElementById('customerName').value = rental.customer;
-        document.getElementById('carName').value = rental.car;
+        document.getElementById('customerName').value = rental.customerName || rental.customer;
+        document.getElementById('carName').value = rental.carName || rental.car;
         document.getElementById('startDate').value = rental.startDate;
         document.getElementById('endDate').value = rental.endDate;
         document.getElementById('totalAmount').value = rental.totalAmount;
         document.getElementById('rentalStatus').value = rental.status;
         
-        // Hiển thị modal
-        modal.style.display = 'block';
-        
         // Lưu ID đơn thuê đang chỉnh sửa
         rentalForm.dataset.editId = rentalId;
+        
+        // Hiển thị modal
+        modal.style.display = 'block';
     } else {
-        alert('Không tìm thấy đơn thuê cần chỉnh sửa!');
+        alert('Không tìm thấy thông tin đơn thuê cần chỉnh sửa!');
     }
 }
 
@@ -843,6 +937,7 @@ function setupCarButtons() {
     
     if (addCarBtn && carModal) {
         addCarBtn.addEventListener('click', function() {
+            console.log('Đã bấm nút thêm xe mới');
             // Reset form và tiêu đề modal
             const carForm = document.getElementById('carForm');
             const modalTitle = document.getElementById('carModalTitle');
@@ -1458,40 +1553,26 @@ function initializeSampleData() {
     }
 }
 
-// Thiết lập các event listeners
+// Thiết lập các event listeners chung
 function setupEventListeners() {
-    // Nút thêm xe mới
-    const addCarBtn = document.getElementById('addCarBtn');
-    const carModal = document.getElementById('carModal');
-    if (addCarBtn && carModal) {
-        addCarBtn.addEventListener('click', () => {
-            carModal.style.display = 'block';
-        });
-    }
-
-    // Nút thêm đơn thuê mới
-    const addRentalBtn = document.getElementById('addRentalBtn');
-    const rentalModal = document.getElementById('rentalModal');
-    if (addRentalBtn && rentalModal) {
-        addRentalBtn.addEventListener('click', () => {
-            rentalModal.style.display = 'block';
-        });
-    }
-
+    console.log('Thiết lập các event listeners chung');
+    
     // Đóng modal khi click vào nút close
     const closeButtons = document.getElementsByClassName('close');
     Array.from(closeButtons).forEach(button => {
-        button.addEventListener('click', () => {
-            button.closest('.modal').style.display = 'none';
-        });
-    });
-
-    // Đóng modal khi click bên ngoài
-    window.addEventListener('click', (event) => {
-        if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
+        // Kiểm tra xem đã có event listener chưa để tránh đăng ký nhiều lần
+        if (!button.hasEventHandler) {
+            button.addEventListener('click', () => {
+                const modal = button.closest('.modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            button.hasEventHandler = true;
         }
     });
+    
+    // Thiết lập các event listeners khác nếu cần
 }
 
 // Hàm khởi tạo ban đầu
