@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Nhân Viên | Hệ thống Quản lý Thuê Xe</title>
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="/api/placeholder/80/80" alt="Logo công ty" class="sidebar-logo">
+                <h2>Hệ Thống Thuê Xe</h2>
+            </div>
+            
+            <div class="user-info">
+                <img src="/api/placeholder/50/50" alt="Avatar" class="user-avatar">
+                <div class="user-details">
+                    <h3 id="userName">Nguyễn Văn A</h3>
+                    <p>Nhân viên</p>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#dashboard" data-page="dashboard"><i class="fas fa-home"></i> Trang chủ</a>
+                    </li>
+                    <li>
+                        <a href="#cars" data-page="cars"><i class="fas fa-car"></i> Quản lý xe</a>
+                    </li>
+                    <li>
+                        <a href="#rentals" data-page="rentals"><i class="fas fa-file-contract"></i> Quản lý đơn thuê</a>
+                    </li>
+                    <li>
+                        <a href="#reports" data-page="reports"><i class="fas fa-chart-line"></i> Tạo báo cáo</a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm...">
+                </div>
+                <div class="header-right">
+                    <div class="notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge">3</span>
+                    </div>
+                    <div class="date-time">
+                        <i class="fas fa-calendar"></i>
+                        <span id="currentDateTime"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard -->
+            <div id="dashboardPage" class="content-page active">
+                <div class="page-header">
+                    <h2>Tổng quan</h2>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon bg-blue">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Tổng số xe</h3>
+                            <div class="card-number">15</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Xe sẵn sàng</h3>
+                            <div class="card-number">8</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Đơn đang xử lý</h3>
+                            <div class="card-number">5</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon bg-red">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3>Xe cần bảo trì</h3>
+                            <div class="card-number">2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-sections">
+                    <!-- Đơn thuê gần đây -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h3>Đơn thuê gần đây</h3>
+                            <a href="#" onclick="showPage('rentalsPage')" class="btn-link">Xem tất cả</a>
+                        </div>
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Mã đơn</th>
+                                        <th>Khách hàng</th>
+                                        <th>Xe</th>
+                                        <th>Ngày thuê</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#R001</td>
+                                        <td>Nguyễn Văn A</td>
+                                        <td>Toyota Camry</td>
+                                        <td>2024-02-20</td>
+                                        <td><span class="status active">Đang thuê</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#R002</td>
+                                        <td>Trần Thị B</td>
+                                        <td>Honda Civic</td>
+                                        <td>2024-02-19</td>
+                                        <td><span class="status completed">Đã hoàn thành</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>#R003</td>
+                                        <td>Lê Văn C</td>
+                                        <td>Mazda CX-5</td>
+                                        <td>2024-02-18</td>
+                                        <td><span class="status active">Đang thuê</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Doanh thu -->
+                    <div class="section">
+                        <div class="section-header">
+                            <h3>Doanh thu</h3>
+                            <a href="#" onclick="showReport('revenue')" class="btn-link">Xem báo cáo</a>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cars Management Page -->
+            <section id="carsPage" class="content-page">
+                <div class="page-header">
+                    <h1>Quản lý xe</h1>
+                    <button id="addCarBtn" class="btn btn-primary"><i class="fas fa-plus"></i> Thêm xe mới</button>
+                </div>
+                
+                <div class="filter-section">
+                    <input type="text" id="carSearch" placeholder="Tìm kiếm xe...">
+                    <select id="carTypeFilter">
+                        <option value="">Tất cả loại xe</option>
+                        <option value="5 chỗ hạng thường">5 chỗ hạng thường</option>
+                        <option value="5 chỗ hạng sang">5 chỗ hạng sang</option>
+                        <option value="7 chỗ">7 chỗ</option>
+                    </select>
+                    <select id="carStatusFilter">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="available">Sẵn có</option>
+                        <option value="rented">Đang thuê</option>
+                        <option value="maintenance">Đang bảo trì</option>
+                    </select>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên xe</th>
+                                <th>Loại xe</th>
+                                <th>Năm sản xuất</th>
+                                <th>Biển số</th>
+                                <th>Màu sắc</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="cars-list">
+                            <!-- Danh sách xe sẽ được thêm vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Rentals Management Page -->
+            <section id="rentalsPage" class="content-page">
+                <div class="page-header">
+                    <h2>Quản lý đơn thuê</h2>
+                    <button id="addRentalBtn" class="btn-primary">
+                        <i class="fas fa-plus"></i> Thêm đơn thuê mới
+                    </button>
+                </div>
+                
+                <div class="filter-buttons">
+                    <button class="active" data-filter="all">Tất cả</button>
+                    <button data-filter="active">Đang thuê</button>
+                    <button data-filter="completed">Đã hoàn thành</button>
+                </div>
+                
+                <div class="data-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Xe</th>
+                                <th>Ngày thuê</th>
+                                <th>Ngày trả</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody class="rentals-list">
+                            <!-- Danh sách đơn thuê sẽ được thêm vào đây -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports Page -->
+            <div id="reportsPage" class="content-page">
+                <div class="page-header">
+                    <h2>Báo cáo</h2>
+                </div>
+                
+                <div class="report-types">
+                    <button onclick="showReport('revenue')" class="btn-primary">Báo cáo doanh thu</button>
+                    <button onclick="showReport('performance')" class="btn-primary">Báo cáo hiệu suất</button>
+                    <button onclick="showReport('status')" class="btn-primary">Báo cáo tình trạng</button>
+                </div>
+                
+                <!-- Báo cáo doanh thu -->
+                <div id="revenueReport" class="report-form" style="display: none;">
+                    <div class="form-group">
+                        <label>Loại báo cáo:</label>
+                        <select id="revenueType">
+                            <option value="monthly">Theo tháng</option>
+                            <option value="quarterly">Theo quý</option>
+                            <option value="yearly">Theo năm</option>
+                        </select>
+                        <input type="date" id="revenueDate">
+                        <button onclick="generateReport('revenue')" class="btn-primary">Tạo báo cáo</button>
+                        <button onclick="hideReport('revenue')" class="btn-secondary">Đóng</button>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                
+                <!-- Báo cáo hiệu suất -->
+                <div id="performanceReport" class="report-form" style="display: none;">
+                    <div class="form-group">
+                        <label>Loại báo cáo:</label>
+                        <select id="performanceType">
+                            <option value="monthly">Theo tháng</option>
+                            <option value="quarterly">Theo quý</option>
+                            <option value="yearly">Theo năm</option>
+                        </select>
+                        <input type="date" id="performanceDate">
+                        <button onclick="generateReport('performance')" class="btn-primary">Tạo báo cáo</button>
+                        <button onclick="hideReport('performance')" class="btn-secondary">Đóng</button>
+                    </div>
+                    <canvas id="performanceChart"></canvas>
+                </div>
+                
+                <!-- Báo cáo tình trạng -->
+                <div id="statusReport" class="report-form" style="display: none;">
+                    <div class="form-group">
+                        <label>Ngày:</label>
+                        <input type="date" id="statusDate">
+                        <button onclick="generateReport('status')" class="btn-primary">Tạo báo cáo</button>
+                        <button onclick="hideReport('status')" class="btn-secondary">Đóng</button>
+                    </div>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal thêm/sửa xe -->
+    <div id="carModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="carModalTitle">Thêm xe mới</h2>
+            <form id="carForm">
+                <div class="form-group">
+                    <label>Tên xe:</label>
+                    <input type="text" id="carName" required>
+                </div>
+                <div class="form-group">
+                    <label>Loại xe:</label>
+                    <select id="carType" required>
+                        <option value="5 chỗ hạng thường">5 chỗ hạng thường</option>
+                        <option value="5 chỗ hạng sang">5 chỗ hạng sang</option>
+                        <option value="7 chỗ">7 chỗ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Năm sản xuất:</label>
+                    <input type="number" id="carYear" required>
+                </div>
+                <div class="form-group">
+                    <label>Biển số:</label>
+                    <input type="text" id="carPlate" required>
+                </div>
+                <div class="form-group">
+                    <label>Màu sắc:</label>
+                    <input type="color" id="carColor" required>
+                </div>
+                <div class="form-group">
+                    <label>Trạng thái:</label>
+                    <select id="carStatus" required>
+                        <option value="available">Sẵn có</option>
+                        <option value="rented">Đang thuê</option>
+                        <option value="maintenance">Đang bảo trì</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Lưu</button>
+                    <button type="button" class="btn-secondary close-modal">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal thêm/sửa đơn thuê -->
+    <div id="rentalModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Thêm đơn xe mới</h2>
+            <form id="rentalForm">
+                <div class="form-group">
+                    <label>Mã đơn:</label>
+                    <input type="text" id="rentalId" required>
+                </div>
+                <div class="form-group">
+                    <label>Tên khách hàng:</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-group">
+                    <label>Xe:</label>
+                    <input type="text" id="carName" required>
+                </div>
+                <div class="form-group">
+                    <label>Ngày thuê:</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Ngày trả:</label>
+                    <input type="date" id="endDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Tổng tiền:</label>
+                    <input type="number" id="totalAmount" required>
+                </div>
+                <div class="form-group">
+                    <label>Trạng thái:</label>
+                    <select id="rentalStatus" required>
+                        <option value="active">Đang thuê</option>
+                        <option value="completed">Đã hoàn thành</option>
+                        <option value="cancelled">Đã hủy</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Lưu</button>
+                    <button type="button" class="btn-secondary close-modal">Hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script1.js"></script>
+</body>
+</html>
