@@ -299,15 +299,21 @@ body {
 
 /* Content Pages */
 .content-page {
-    display: none;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: none; /* Mặc định ẩn tất cả các trang */
     padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .content-page.active {
-    display: block;
+    display: block !important; /* Hiển thị trang active và đè lên các style khác */
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 .page-header {

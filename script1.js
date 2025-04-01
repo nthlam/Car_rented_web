@@ -9,43 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
         setupLoginForm();
     }
     
-    // Xử lý điều hướng nếu đang ở trang chính
+    // Khởi tạo ứng dụng nếu đang ở trang chính
     if (document.querySelector('.sidebar-nav')) {
-        setupNavigation();
+        console.log('Trang đã được tải xong. Khởi tạo ứng dụng...');
+        initializeApp();
     }
     
-    // Xử lý đăng xuất
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-                // Trong trường hợp thực tế, bạn sẽ xóa phiên đăng nhập
-                localStorage.removeItem('loggedInUser');
-                window.location.href = 'login1.html';
-            }
-        });
-    }
-    
-    // Thiết lập chức năng tìm kiếm
-    setupSearch();
-    
-    // Thiết lập trang xe
-    setupCarsPage();
-    
-    // Thiết lập trang đơn thuê
-    setupRentalsPage();
-    
-    // Thiết lập trang báo cáo
-    setupReportsPage();
-    
-    // Kiểm tra xem người dùng đã đăng nhập chưa (nếu đang ở trang chính)
-    if (!document.getElementById('loginForm')) {
-        checkLoginStatus();
-    }
-
-    initializeSampleData();
-    setupEventListeners();
-    showPage('dashboardPage');
+    console.log('Đã hoàn tất khởi tạo trang');
 });
 
 // Cập nhật ngày giờ hiện tại
@@ -230,49 +200,116 @@ function setupNavigation() {
             // Thêm active cho link được chọn
             this.parentElement.classList.add('active');
             
-            // Lấy trang cần hiển thị
-            const pageName = this.getAttribute('data-page');
+            // Lấy trang cần hiển thị từ href hoặc data-page
+            const pageId = this.getAttribute('data-page') || this.getAttribute('href').substring(1);
+            console.log('Sidebar click - pageId:', pageId);
             
             // Hiển thị trang
-            showPage(pageName);
+            showPage(pageId);
         });
     });
     
     // Xử lý các link "Xem tất cả"
-    const viewAllLinks = document.querySelectorAll('.view-all');
+    const viewAllLinks = document.querySelectorAll('.view-all, .btn-link');
     viewAllLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Lấy trang đích từ href
-            const targetPage = this.getAttribute('href').substring(1);
+            // Lấy trang đích
+            const targetPage = this.getAttribute('href')?.substring(1) || this.getAttribute('data-page');
+            console.log('View all click - targetPage:', targetPage);
             
-            // Tìm và kích hoạt link tương ứng trong sidebar
-            navLinks.forEach(navLink => {
-                if (navLink.getAttribute('data-page') === targetPage) {
-                    // Click vào link để kích hoạt sự kiện của nó
-                    navLink.click();
-                }
-            });
+            if (targetPage) {
+                // Tìm và kích hoạt link tương ứng trong sidebar
+                navLinks.forEach(navLink => {
+                    const navLinkPage = navLink.getAttribute('data-page') || navLink.getAttribute('href')?.substring(1);
+                    if (navLinkPage === targetPage) {
+                        // Click vào link để kích hoạt sự kiện của nó
+                        navLink.click();
+                    }
+                });
+            }
         });
     });
 }
 
-// Hiển thị trang
-function showPage(pageName) {
+// Hàm debug để kiểm tra trạng thái hiển thị các trang
+function debugPageVisibility() {
+    console.log('------- DEBUG: TRẠNG THÁI HIỂN THỊ CÁC TRANG -------');
+    document.querySelectorAll('.content-page').forEach(page => {
+        const isDisplayed = window.getComputedStyle(page).display !== 'none';
+        const hasActiveClass = page.classList.contains('active');
+        console.log(`${page.id}: display=${window.getComputedStyle(page).display}, active=${hasActiveClass}`);
+    });
+    console.log('---------------------------------------------------');
+}
+
+// Hàm hiển thị trang
+function showPage(pageId) {
+    console.log('Đang chuyển đến trang:', pageId);
+    
+    // Debug trước khi thay đổi
+    debugPageVisibility();
+    
     // Ẩn tất cả các trang
-    const allPages = document.querySelectorAll('.content-page');
-    allPages.forEach(page => {
+    document.querySelectorAll('.content-page').forEach(page => {
+        console.log('Ẩn trang:', page.id);
+        page.style.display = 'none';
         page.classList.remove('active');
     });
     
-    // Hiển thị trang được chọn
-    const targetPage = document.getElementById(pageName + 'Page');
-    if (targetPage) {
-        targetPage.classList.add('active');
-    } else {
-        console.error('Không tìm thấy trang: ' + pageName + 'Page');
+    // Xác định ID trang đúng (thêm 'Page' nếu cần)
+    let targetId = pageId;
+    if (pageId && !pageId.endsWith('Page')) {
+        targetId = pageId + 'Page';
     }
+    
+    console.log('Tìm kiếm trang với ID:', targetId);
+    
+    // Tìm trang cần hiển thị
+    const targetPage = document.getElementById(targetId);
+    if (targetPage) {
+        console.log('Đã tìm thấy trang:', targetId);
+        targetPage.style.display = 'block';
+        targetPage.classList.add('active');
+        
+        // Cập nhật trạng thái active trong sidebar
+        document.querySelectorAll('.sidebar-nav a').forEach(link => {
+            const linkPage = link.getAttribute('data-page') || link.getAttribute('href')?.substring(1);
+            link.parentElement.classList.remove('active');
+            
+            if (linkPage === pageId) {
+                link.parentElement.classList.add('active');
+            }
+        });
+        
+        // Load dữ liệu cho trang tương ứng
+        switch(pageId) {
+            case 'dashboard':
+                loadDashboardData();
+                break;
+            case 'cars':
+                loadCarsData();
+                break;
+            case 'rentals':
+                loadRentalsData();
+                break;
+            case 'reports':
+                loadReportsData();
+                break;
+        }
+    } else {
+        console.error('Không tìm thấy trang với ID:', targetId);
+        // Hiển thị trang mặc định nếu không tìm thấy trang
+        const dashboardPage = document.getElementById('dashboardPage');
+        if (dashboardPage) {
+            dashboardPage.style.display = 'block';
+            dashboardPage.classList.add('active');
+        }
+    }
+    
+    // Debug sau khi thay đổi
+    debugPageVisibility();
 }
 
 // Thiết lập nút đăng xuất
@@ -281,7 +318,9 @@ function setupLogout() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
             if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-                window.location.href = 'login.html';
+                // Trong trường hợp thực tế, bạn sẽ xóa phiên đăng nhập
+                localStorage.removeItem('loggedInUser');
+                window.location.href = 'login1.html';
             }
         });
     }
@@ -318,43 +357,20 @@ function setupCarsPage() {
 
 // Hiển thị danh sách xe
 function displayCarsList() {
-    const carsList = document.querySelector('.cars-list tbody');
-    if (!carsList) return;
+    console.log('Hiển thị danh sách xe...');
+    const carsList = document.querySelector('.cars-list');
+    if (!carsList) {
+        console.error('Không tìm thấy phần tử .cars-list');
+        return;
+    }
     
     // Lấy danh sách xe từ localStorage hoặc sử dụng dữ liệu mẫu
-    const cars = JSON.parse(localStorage.getItem('cars')) || [
-        {
-            id: 1,
-            name: 'Toyota Camry',
-            type: '5 chỗ hạng thường',
-            year: 2023,
-            plate: '51A-12345',
-            color: '#000000',
-            status: 'rented'
-        },
-        {
-            id: 2,
-            name: 'Honda Civic',
-            type: '5 chỗ hạng thường',
-            year: 2022,
-            plate: '51A-54321',
-            color: '#FF0000',
-            status: 'available'
-        },
-        {
-            id: 3,
-            name: 'Mazda CX-5',
-            type: '5 chỗ hạng sang',
-            year: 2021,
-            plate: '51A-67890',
-            color: '#0000FF',
-            status: 'maintenance'
-        }
-    ];
+    const cars = JSON.parse(localStorage.getItem('cars')) || [];
     
-    // Lưu danh sách xe vào localStorage nếu chưa có
-    if (!localStorage.getItem('cars')) {
-        localStorage.setItem('cars', JSON.stringify(cars));
+    // Kiểm tra xem có dữ liệu xe không
+    if (cars.length === 0) {
+        carsList.innerHTML = '<tr><td colspan="8" class="text-center">Không có dữ liệu xe</td></tr>';
+        return;
     }
     
     // Hiển thị danh sách xe
@@ -639,10 +655,21 @@ function setupRentalModal() {
 
 // Hiển thị danh sách đơn thuê
 function displayRentalsList(filter = 'all') {
-    const rentalsList = document.querySelector('.rentals-list tbody');
-    if (!rentalsList) return;
+    console.log('Hiển thị danh sách đơn thuê với bộ lọc:', filter);
+    const rentalsList = document.querySelector('.rentals-list');
+    if (!rentalsList) {
+        console.error('Không tìm thấy phần tử .rentals-list');
+        return;
+    }
     
+    // Lấy danh sách đơn thuê từ localStorage
     const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
+    
+    // Kiểm tra xem có dữ liệu đơn thuê không
+    if (rentals.length === 0) {
+        rentalsList.innerHTML = '<tr><td colspan="8" class="text-center">Không có đơn thuê nào</td></tr>';
+        return;
+    }
     
     // Lọc đơn thuê theo trạng thái
     let filteredRentals = rentals;
@@ -654,11 +681,11 @@ function displayRentalsList(filter = 'all') {
     rentalsList.innerHTML = filteredRentals.map(rental => `
         <tr>
             <td>${rental.id}</td>
-            <td>${rental.customer}</td>
-            <td>${rental.car}</td>
+            <td>${rental.customer || rental.customerName}</td>
+            <td>${rental.car || rental.carName}</td>
             <td>${rental.startDate}</td>
             <td>${rental.endDate}</td>
-            <td>${rental.totalAmount.toLocaleString()} VNĐ</td>
+            <td>${Number(rental.totalAmount).toLocaleString()} VNĐ</td>
             <td><span class="status ${rental.status}">${getRentalStatusText(rental.status)}</span></td>
             <td class="actions">
                 <button class="btn-icon btn-view" onclick="viewRental('${rental.id}')"><i class="fas fa-eye"></i></button>
@@ -1465,4 +1492,69 @@ function setupEventListeners() {
             event.target.style.display = 'none';
         }
     });
+}
+
+// Hàm khởi tạo ban đầu
+function initializeApp() {
+    console.log('Khởi tạo ứng dụng...');
+    
+    // Hiển thị danh sách tất cả các trang
+    console.log('Danh sách các trang có sẵn:');
+    document.querySelectorAll('.content-page').forEach(page => {
+        console.log('- Trang:', page.id);
+    });
+    
+    // Khởi tạo dữ liệu mẫu
+    initializeSampleData();
+    
+    // Thiết lập điều hướng
+    setupNavigation();
+    
+    // Thiết lập đăng xuất
+    setupLogout();
+    
+    // Thiết lập tìm kiếm
+    setupSearch();
+    
+    // Thiết lập các trang
+    setupCarsPage();
+    setupRentalsPage();
+    setupReportsPage();
+    
+    // Thiết lập các sự kiện
+    setupEventListeners();
+    
+    // Kiểm tra trạng thái đăng nhập
+    checkLoginStatus();
+    
+    // Hiển thị trang dashboard mặc định
+    showPage('dashboard');
+}
+
+// Load dữ liệu cho trang xe
+function loadCarsData() {
+    console.log('Đang tải dữ liệu cho trang Quản lý xe...');
+    // Thiết lập trang xe
+    setupCarsPage();
+}
+
+// Load dữ liệu cho trang đơn thuê
+function loadRentalsData() {
+    console.log('Đang tải dữ liệu cho trang Quản lý đơn thuê...');
+    // Thiết lập trang đơn thuê
+    setupRentalsPage();
+}
+
+// Load dữ liệu cho trang báo cáo
+function loadReportsData() {
+    console.log('Đang tải dữ liệu cho trang Báo cáo...');
+    // Thiết lập trang báo cáo
+    setupReportsPage();
+}
+
+// Load dữ liệu cho trang chủ
+function loadDashboardData() {
+    console.log('Đang tải dữ liệu cho trang Chủ...');
+    // Cập nhật thống kê trên dashboard
+    updateDashboardStats();
 }
