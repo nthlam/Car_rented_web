@@ -1141,91 +1141,119 @@ body {
 /* CSS cho biểu đồ cột báo cáo doanh thu */
 .bar-chart {
     display: flex;
-    height: 300px;
+    height: 320px;
     align-items: flex-end;
     justify-content: space-around;
-    margin-top: 30px;
+    margin: 40px auto 50px;
     padding: 0 20px 0 70px; /* Thêm không gian cho nhãn trục Y */
-    margin-bottom: 40px;
     position: relative;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
 }
 
 .bar-chart::after {
     content: '';
     position: absolute;
-    left: 20px;
+    left: 70px;
     right: 20px;
     bottom: 0;
     height: 2px;
-    background-color: #e0e0e0;
+    background-color: #2c3e50;
 }
 
 .bar-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 60px;
+    width: 80px;
     position: relative;
     z-index: 1;
+    margin: 0 10px;
 }
 
 .bar {
-    width: 50px;
+    width: 60px;
     background: linear-gradient(to top, #27ae60, #2ecc71);
-    border-radius: 5px 5px 0 0;
+    border-radius: 6px 6px 0 0;
     transition: height 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
-    box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+    box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
 }
 
 .bar:hover {
     background: linear-gradient(to top, #219653, #27d87c);
-    transform: scaleY(1.05);
+    transform: scaleY(1.05) scaleX(1.05);
     transform-origin: bottom;
     cursor: pointer;
-    box-shadow: 0 0 15px rgba(46, 204, 113, 0.5);
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.6);
+}
+
+.bar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 6px 6px 0 0;
 }
 
 .bar-label {
-    margin-top: 10px;
+    margin-top: 15px;
+    padding: 5px 10px;
+    background-color: #fff;
+    border-radius: 15px;
     text-align: center;
     font-size: 14px;
     font-weight: 500;
     color: #2c3e50;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .bar-value {
     position: absolute;
-    top: -30px;
-    width: 100%;
+    top: -40px;
+    width: 120%;
     text-align: center;
     font-size: 13px;
     font-weight: bold;
     color: #2c3e50;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 8px;
     border-radius: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(10px);
+    z-index: 5;
 }
 
 .bar:hover .bar-value {
     opacity: 1;
-}
-
-.chart-legend {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+    transform: translateY(0);
 }
 
 .chart-title {
     text-align: center;
-    font-size: 18px;
-    margin-bottom: 20px;
+    font-size: 20px;
+    margin: 30px 0;
     color: #2c3e50;
     font-weight: 600;
+    position: relative;
+}
+
+.chart-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background-color: #2ecc71;
+    border-radius: 3px;
 }
 
 /* Thêm các dòng đánh dấu trục Y */
@@ -1249,10 +1277,12 @@ body {
     position: absolute;
     left: 0;
     font-size: 12px;
-    color: #95a5a6;
+    color: #2c3e50;
     width: 65px;
     text-align: right;
+    padding-right: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-weight: 500;
 }

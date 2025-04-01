@@ -1288,7 +1288,7 @@ function setupReportButtons() {
 
 // Report Functions
 function showReport(type) {
-    console.log('Hiển thị báo cáo:', type);
+    console.log('Đang chuẩn bị hiển thị báo cáo:', type);
     
     // Gỡ lỗi - In ra thông tin về các phần tử báo cáo
     const reportElements = {
@@ -1310,7 +1310,18 @@ function showReport(type) {
     
     for (const key in chartElements) {
         console.log(`- ${key}Chart: ${chartElements[key] ? 'Tìm thấy' : 'Không tìm thấy'}`);
+        if (chartElements[key]) {
+            console.log(`  - ID: ${chartElements[key].id}`);
+            console.log(`  - Display: ${getComputedStyle(chartElements[key]).display}`);
+            console.log(`  - Visibility: ${getComputedStyle(chartElements[key]).visibility}`);
+            console.log(`  - Parent: ${chartElements[key].parentElement.id}`);
+            console.log(`  - Parent display: ${getComputedStyle(chartElements[key].parentElement).display}`);
+        }
     }
+    
+    // Kiểm tra phần tử revenueChart trên trang để đảm bảo không bị trùng ID
+    const allRevenueCharts = document.querySelectorAll('[id="revenueChart"]');
+    console.log(`Số lượng phần tử có ID revenueChart: ${allRevenueCharts.length}`);
     
     // Ẩn tất cả các form báo cáo
     document.querySelectorAll('.report-form').forEach(form => {
@@ -1324,8 +1335,19 @@ function showReport(type) {
         console.log('Hiển thị form báo cáo:', type);
         reportForm.style.display = 'block';
         
+        // Đảm bảo phần tử báo cáo có thể nhìn thấy
+        const reportChart = document.getElementById(`${type}Chart`);
+        if (reportChart) {
+            console.log(`Phần tử ${type}Chart đã sẵn sàng để hiển thị`);
+            reportChart.style.visibility = 'visible';
+            reportChart.style.display = 'block';
+        }
+        
         // Tạo báo cáo
-        generateReport(type);
+        setTimeout(() => {
+            console.log('Gọi hàm tạo báo cáo sau 100ms');
+            generateReport(type);
+        }, 100);
     } else {
         console.error('Không tìm thấy form báo cáo:', type);
     }
@@ -1359,7 +1381,14 @@ function generateReport(type) {
 function generateRevenueReport() {
     const type = document.getElementById('revenueType').value;
     const reportContainer = document.getElementById('revenueChart');
-    if (!reportContainer) return;
+    
+    console.log('Đang tạo báo cáo doanh thu:', type);
+    console.log('Container báo cáo:', reportContainer);
+    
+    if (!reportContainer) {
+        console.error('Không tìm thấy phần tử revenueChart để hiển thị báo cáo');
+        return;
+    }
     
     // Dữ liệu cố định
     const data = {
@@ -1394,6 +1423,8 @@ function generateRevenueReport() {
     // Làm tròn giá trị tối đa lên một số đẹp hơn để làm trục Y
     const roundedMaxValue = Math.ceil(maxValue / 100000000) * 100000000;
     
+    console.log('Giá trị tối đa:', maxValue, 'Giá trị làm tròn:', roundedMaxValue);
+    
     // Tạo giao diện báo cáo dạng biểu đồ cột
     let html = '<div class="report-container">';
     html += `<h3>Báo cáo doanh thu ${getReportTypeText(type)}</h3>`;
@@ -1419,14 +1450,20 @@ function generateRevenueReport() {
         const height = Math.round((item.value / roundedMaxValue) * 250);
         
         // Tạo màu khác nhau cho mỗi cột
-        const colors = ['#2ecc71', '#27ae60', '#3498db', '#2980b9', '#9b59b6', '#8e44ad'];
+        const colors = [
+            ['#2ecc71', '#27ae60'], // Xanh lá
+            ['#3498db', '#2980b9'], // Xanh dương
+            ['#9b59b6', '#8e44ad'], // Tím
+            ['#e67e22', '#d35400']  // Cam
+        ];
         const colorIndex = index % colors.length;
-        const bgColor = colors[colorIndex];
-        const gradientColor = lightenColor(bgColor, 20);
+        const [gradientTop, gradientBottom] = colors[colorIndex];
+        
+        const percent = Math.round((item.value / total) * 100);
         
         html += `<div class="bar-item">
-            <div class="bar" style="height: ${height}px; background: linear-gradient(to top, ${bgColor}, ${gradientColor});">
-                <div class="bar-value">${formatCurrency(item.value)}</div>
+            <div class="bar" style="height: ${height}px; background: linear-gradient(to top, ${gradientBottom}, ${gradientTop});">
+                <div class="bar-value">${formatCurrency(item.value)} (${percent}%)</div>
             </div>
             <div class="bar-label">${item.label}</div>
         </div>`;
@@ -1457,23 +1494,7 @@ function generateRevenueReport() {
     
     // Hiển thị báo cáo
     reportContainer.innerHTML = html;
-}
-
-// Hàm để làm sáng màu (cho gradient)
-function lightenColor(color, percent) {
-    // Nếu color là hex
-    if (color.startsWith('#')) {
-        let r = parseInt(color.substr(1, 2), 16);
-        let g = parseInt(color.substr(3, 2), 16);
-        let b = parseInt(color.substr(5, 2), 16);
-        
-        r = Math.min(255, Math.floor(r + (255 - r) * (percent / 100)));
-        g = Math.min(255, Math.floor(g + (255 - g) * (percent / 100)));
-        b = Math.min(255, Math.floor(b + (255 - b) * (percent / 100)));
-        
-        return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-    }
-    return color;
+    console.log('Đã tạo xong báo cáo doanh thu');
 }
 
 function generatePerformanceReport() {
