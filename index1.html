@@ -6,6 +6,7 @@
     <title>Trang Chủ Nhân Viên | Hệ thống Quản lý Thuê Xe</title>
     <link rel="stylesheet" href="style1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -130,24 +131,24 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>#R001</td>
+                                        <td>R125</td>
                                         <td>Nguyễn Văn A</td>
                                         <td>Toyota Camry</td>
-                                        <td>2024-02-20</td>
+                                        <td>2025-02-20</td>
                                         <td><span class="status active">Đang thuê</span></td>
                                     </tr>
                                     <tr>
-                                        <td>#R002</td>
+                                        <td>R568</td>
                                         <td>Trần Thị B</td>
                                         <td>Honda Civic</td>
-                                        <td>2024-02-19</td>
+                                        <td>2025-02-19</td>
                                         <td><span class="status completed">Đã hoàn thành</span></td>
                                     </tr>
                                     <tr>
-                                        <td>#R003</td>
+                                        <td>R007</td>
                                         <td>Lê Văn C</td>
                                         <td>Mazda CX-5</td>
-                                        <td>2024-02-18</td>
+                                        <td>2025-02-18</td>
                                         <td><span class="status active">Đang thuê</span></td>
                                     </tr>
                                 </tbody>
@@ -159,7 +160,7 @@
                     <div class="section">
                         <div class="section-header">
                             <h3>Doanh thu</h3>
-                            <a href="#" onclick="showReport('revenue')" class="btn-link">Xem báo cáo</a>
+                            <a href="#" onclick="showPage('reports'); setTimeout(() => showReport('revenue'), 100);" class="btn-link">Xem báo cáo</a>
                         </div>
                         <div class="chart-container">
                             <canvas id="dashboardRevenueChart"></canvas>

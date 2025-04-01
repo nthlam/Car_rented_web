@@ -1012,6 +1012,70 @@ function loadDashboardData() {
     console.log('Đang tải dữ liệu cho trang Chủ...');
     // Cập nhật thống kê trên dashboard
     updateDashboardStats();
+    
+    // Vẽ biểu đồ doanh thu
+    const canvas = document.getElementById('dashboardRevenueChart');
+    if (canvas) {
+        // Xóa biểu đồ cũ nếu có
+        const existingChart = Chart.getChart(canvas);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        // Dữ liệu mẫu cho biểu đồ doanh thu
+        const data = {
+            labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+            datasets: [{
+                label: 'Doanh thu theo tháng',
+                data: [85, 92, 78, 95, 88, 92, 85, 98, 92, 95, 98, 100].map(value => value * 1000000),
+                backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                borderColor: 'rgba(46, 204, 113, 1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4
+            }]
+        };
+
+        // Cấu hình biểu đồ
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                return 'Doanh thu: ' + formatCurrency(value) + ' VNĐ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatCurrency(value) + ' VNĐ';
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Vẽ biểu đồ mới
+        new Chart(canvas, config);
+        console.log('Đã vẽ biểu đồ doanh thu');
+    } else {
+        console.error('Không tìm thấy canvas để vẽ biểu đồ doanh thu');
+    }
 }
 
 // ----- QUẢN LÝ XE -----

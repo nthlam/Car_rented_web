@@ -898,7 +898,7 @@ body {
 
 /* Khoảng cách cho các nút trong dashboard */
 .dashboard-sections {
-    display: grid;
+    /* display: grid; */
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     margin-top: 20px;
@@ -937,11 +937,18 @@ body {
 
 /* Khoảng cách cho các nút trong chart container */
 .chart-container {
-    margin-top: 20px;
+    width: 100%;
+    height: 300px;
+    margin: 20px 0;
     padding: 20px;
-    background: white;
+    background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#dashboardRevenueChart {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* Modal */
