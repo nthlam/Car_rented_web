@@ -569,70 +569,96 @@ function setupCarModal() {
 
 // Thiết lập trang quản lý đơn thuê
 function setupRentalsPage() {
-    // Thiết lập nút thêm đơn thuê mới
-    const addRentalBtn = document.getElementById('addRentalBtn');
-    const rentalModal = document.getElementById('rentalModal');
+    console.log('Thiết lập trang Quản lý đơn thuê');
     
-    if (addRentalBtn && rentalModal) {
+    // Nút thêm đơn thuê mới
+    const addRentalBtn = document.getElementById('addRentalBtn');
+    if (addRentalBtn) {
         addRentalBtn.addEventListener('click', function() {
-            console.log('Đã bấm nút thêm đơn thuê mới');
-            // Reset form và tiêu đề modal
+            console.log('Mở form thêm đơn thuê mới');
+            // Tạo ID ngẫu nhiên
+            const randomId = 'R' + Math.floor(Math.random() * 900 + 100);
+            
+            // Lấy modal và form
+            const modal = document.getElementById('rentalModal');
             const rentalForm = document.getElementById('rentalForm');
-            if (rentalForm) {
+            
+            if (modal && rentalForm) {
+                // Reset form và xóa ID đang chỉnh sửa
                 rentalForm.reset();
                 delete rentalForm.dataset.editId;
                 
-                // Tự động tạo ID cho đơn thuê mới
-                const rentalId = document.getElementById('rentalId');
-                if (rentalId) {
-                    rentalId.value = 'R' + Date.now().toString().slice(-6);
+                // Cập nhật tiêu đề modal nếu có
+                const modalTitle = modal.querySelector('h2');
+                if (modalTitle) {
+                    modalTitle.textContent = 'Thêm đơn thuê mới';
                 }
+                
+                // Điền ID ngẫu nhiên
+                const idInput = document.getElementById('rentalId');
+                if (idInput) {
+                    idInput.value = randomId;
+                }
+                
+                // Thiết lập ngày thuê mặc định là ngày hôm nay
+                const startDateInput = document.getElementById('startDate');
+                if (startDateInput) {
+                    const today = new Date().toISOString().split('T')[0];
+                    startDateInput.value = today;
+                }
+                
+                // Hiển thị modal
+                modal.style.display = 'block';
+                
+                // Focus vào trường đầu tiên
+                document.getElementById('customerName')?.focus();
+            } else {
+                console.error('Không tìm thấy modal hoặc form đơn thuê');
+                alert('Không thể mở form thêm đơn thuê mới. Vui lòng thử lại sau!');
             }
-            
-            // Hiển thị modal
-            rentalModal.style.display = 'block';
         });
     }
     
-    // Thiết lập modal thêm đơn thuê
+    // Thiết lập modal đơn thuê
     setupRentalModal();
     
-    // Thiết lập các nút lọc
+    // Thiết lập các nút filter
     setupRentalFilters();
     
     // Hiển thị danh sách đơn thuê
-    displayRentalsList('all');
+    displayRentalsList();
 }
 
 // Thiết lập modal thêm đơn thuê
 function setupRentalModal() {
-    const modal = document.getElementById('rentalModal');
-    const closeBtn = modal?.querySelector('.close');
-    const rentalForm = document.getElementById('rentalForm');
-    const closeModalButtons = modal?.querySelectorAll('.close-modal');
+    console.log('Thiết lập modal đơn thuê');
     
-    if (!modal) {
-        console.error('Không tìm thấy modal đơn thuê');
+    // Lấy các phần tử
+    const modal = document.getElementById('rentalModal');
+    const rentalForm = document.getElementById('rentalForm');
+    
+    if (!modal || !rentalForm) {
+        console.error('Không tìm thấy modal hoặc form đơn thuê');
         return;
     }
     
-    // Thiết lập nút đóng modal
+    // Đóng modal khi click vào nút đóng
+    const closeBtn = modal.querySelector('.close');
     if (closeBtn) {
         closeBtn.addEventListener('click', function() {
-            console.log('Đóng modal đơn thuê bằng nút X');
+            console.log('Đóng modal đơn thuê bằng nút đóng');
             modal.style.display = 'none';
-            if (rentalForm) rentalForm.reset();
+            rentalForm.reset();
         });
     }
     
-    // Thiết lập các nút "Hủy"
-    if (closeModalButtons && closeModalButtons.length > 0) {
-        closeModalButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                console.log('Đóng modal đơn thuê bằng nút Hủy');
-                modal.style.display = 'none';
-                if (rentalForm) rentalForm.reset();
-            });
+    // Đóng modal khi click vào nút hủy
+    const cancelBtn = modal.querySelector('.close-modal');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+            console.log('Đóng modal đơn thuê bằng nút hủy');
+            modal.style.display = 'none';
+            rentalForm.reset();
         });
     }
     
@@ -652,14 +678,15 @@ function setupRentalModal() {
             
             try {
                 // Kiểm tra các trường bắt buộc
-                const requiredFields = ['rentalId', 'customerName', 'carName', 'startDate', 'endDate'];
+                const requiredFields = [];
+                // const requiredFields = ['rentalId', 'customerName', 'rentalCarName', 'startDate', 'endDate'];
                 const missingFields = requiredFields.filter(field => !document.getElementById(field)?.value);
                 
                 if (missingFields.length > 0) {
                     const fieldNames = {
                         'rentalId': 'Mã đơn',
                         'customerName': 'Tên khách hàng',
-                        'carName': 'Xe',
+                        'rentalCarName': 'Xe',
                         'startDate': 'Ngày thuê',
                         'endDate': 'Ngày trả'
                     };
@@ -678,26 +705,20 @@ function setupRentalModal() {
                     return;
                 }
                 
-                // Lấy dữ liệu từ form
-                const rentalIdValue = document.getElementById('rentalId').value;
-                const customerNameValue = document.getElementById('customerName').value;
-                const carNameValue = document.getElementById('carName').value;
-                const startDateValue = document.getElementById('startDate').value;
-                const endDateValue = document.getElementById('endDate').value;
-                const totalAmountValue = document.getElementById('totalAmount').value || 0;
-                const statusValue = document.getElementById('rentalStatus').value || 'active';
-                
+                // Lấy giá trị từ form
                 const rentalData = {
-                    id: rentalIdValue.startsWith('R') ? rentalIdValue : 'R' + rentalIdValue,
-                    customerName: customerNameValue,
-                    carName: carNameValue,
-                    startDate: startDateValue,
-                    endDate: endDateValue,
-                    totalAmount: Number(totalAmountValue),
-                    status: statusValue
+                    id: document.getElementById('rentalId').value,
+                    customerName: document.getElementById('customerName').value,
+                    carName: document.getElementById('rentalCarName').value, // Đổi tên từ rentalCarName
+                    startDate: document.getElementById('startDate').value,
+                    endDate: document.getElementById('endDate').value,
+                    totalAmount: document.getElementById('totalAmount').value,
+                    status: document.getElementById('rentalStatus').value
                 };
                 
-                // Lấy danh sách đơn thuê hiện tại
+                console.log('Dữ liệu đơn thuê được lưu:', rentalData);
+                
+                // Lấy danh sách đơn thuê từ localStorage
                 const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
                 
                 // Kiểm tra xem là thêm mới hay chỉnh sửa
@@ -716,10 +737,10 @@ function setupRentalModal() {
                     }
                 } else {
                     // Kiểm tra trùng ID nếu thêm mới
-                    if (rentals.some(r => r.id === rentalData.id)) {
-                        alert(`Mã đơn ${rentalData.id} đã tồn tại! Vui lòng sử dụng mã khác.`);
-                        return;
-                    }
+                    // if (rentals.some(r => r.id === rentalData.id)) {
+                    //     alert(`Mã đơn ${rentalData.id} đã tồn tại! Vui lòng sử dụng mã khác.`);
+                    //     return;
+                    // }
                     
                     // Thêm đơn thuê mới
                     console.log('Thêm đơn thuê mới:', rentalData.id);
@@ -762,6 +783,9 @@ function displayRentalsList(filter = 'all') {
     // Lấy danh sách đơn thuê từ localStorage
     const rentals = JSON.parse(localStorage.getItem('rentals')) || [];
     
+    // Debug dữ liệu đơn thuê
+    console.log('Dữ liệu đơn thuê gốc:', rentals);
+    
     // Kiểm tra xem có dữ liệu đơn thuê không
     if (rentals.length === 0) {
         rentalsList.innerHTML = '<tr><td colspan="8" class="text-center">Không có đơn thuê nào</td></tr>';
@@ -775,11 +799,16 @@ function displayRentalsList(filter = 'all') {
     }
     
     // Hiển thị danh sách đơn thuê
-    rentalsList.innerHTML = filteredRentals.map(rental => `
+    rentalsList.innerHTML = filteredRentals.map(rental => {
+        // Đảm bảo lấy đúng thông tin xe (có thể lưu ở nhiều thuộc tính khác nhau)
+        const carName = rental.carName || rental.car || "Không xác định";
+        const customerName = rental.customerName || rental.customer || "Không xác định";
+        
+        return `
         <tr>
             <td>${rental.id}</td>
-            <td>${rental.customer || rental.customerName}</td>
-            <td>${rental.car || rental.carName}</td>
+            <td>${customerName}</td>
+            <td>${carName}</td>
             <td>${rental.startDate}</td>
             <td>${rental.endDate}</td>
             <td>${Number(rental.totalAmount).toLocaleString()} VNĐ</td>
@@ -790,7 +819,8 @@ function displayRentalsList(filter = 'all') {
                 <button class="btn-icon btn-delete" onclick="deleteRental('${rental.id}')"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Lấy text trạng thái đơn thuê
@@ -832,6 +862,10 @@ function viewRental(rentalId) {
     const rental = rentals.find(r => r.id === rentalId);
     
     if (rental) {
+        // Đảm bảo lấy đúng thông tin xe và khách hàng
+        const carName = rental.carName || rental.car || "Không xác định";
+        const customerName = rental.customerName || rental.customer || "Không xác định";
+        
         const startDate = new Date(rental.startDate);
         const endDate = new Date(rental.endDate);
         const totalDays = Math.round((endDate - startDate) / (1000 * 60 * 60 * 24));
@@ -843,8 +877,8 @@ function viewRental(rentalId) {
             CHI TIẾT ĐƠN THUÊ
             ======================================
             Mã đơn: ${rental.id}
-            Khách hàng: ${rental.customerName || rental.customer}
-            Xe: ${rental.carName || rental.car}
+            Khách hàng: ${customerName}
+            Xe: ${carName}
             
             Ngày thuê: ${formatDate(rental.startDate)}
             Ngày trả: ${formatDate(rental.endDate)}
@@ -894,14 +928,21 @@ function editRental(rentalId) {
             modalTitle.textContent = 'Chỉnh sửa đơn thuê';
         }
         
+        // Đảm bảo lấy đúng thông tin xe và khách hàng
+        const carName = rental.carName || rental.car || "";
+        const customerName = rental.customerName || rental.customer || "";
+        
         // Điền thông tin hiện tại vào form
         document.getElementById('rentalId').value = rental.id;
-        document.getElementById('customerName').value = rental.customerName || rental.customer;
-        document.getElementById('carName').value = rental.carName || rental.car;
+        document.getElementById('customerName').value = customerName;
+        document.getElementById('rentalCarName').value = carName; // Dùng ID mới rentalCarName
         document.getElementById('startDate').value = rental.startDate;
         document.getElementById('endDate').value = rental.endDate;
         document.getElementById('totalAmount').value = rental.totalAmount;
         document.getElementById('rentalStatus').value = rental.status;
+        
+        // Ghi log để kiểm tra thông tin xe
+        console.log('Thông tin xe đang được chỉnh sửa:', carName);
         
         // Lưu ID đơn thuê đang chỉnh sửa
         rentalForm.dataset.editId = rentalId;
