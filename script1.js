@@ -220,14 +220,14 @@ function setupNavigation() {
             console.log('View all click - targetPage:', targetPage);
             
             if (targetPage) {
-                // Tìm và kích hoạt link tương ứng trong sidebar
-                navLinks.forEach(navLink => {
+            // Tìm và kích hoạt link tương ứng trong sidebar
+            navLinks.forEach(navLink => {
                     const navLinkPage = navLink.getAttribute('data-page') || navLink.getAttribute('href')?.substring(1);
                     if (navLinkPage === targetPage) {
-                        // Click vào link để kích hoạt sự kiện của nó
-                        navLink.click();
-                    }
-                });
+                    // Click vào link để kích hoạt sự kiện của nó
+                    navLink.click();
+                }
+            });
             }
         });
     });
@@ -486,7 +486,11 @@ function setupCarModal() {
     
     // Thiết lập nút đóng modal
     if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
+        // Xóa event listener cũ nếu có
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+        
+        newCloseBtn.addEventListener('click', function() {
             console.log('Đóng modal xe bằng nút X');
             modal.style.display = 'none';
             if (carForm) carForm.reset();
@@ -496,7 +500,11 @@ function setupCarModal() {
     // Thiết lập các nút "Hủy"
     if (closeModalButtons && closeModalButtons.length > 0) {
         closeModalButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            // Xóa event listener cũ nếu có
+            const newButton = button.cloneNode(true);
+            button.parentNode.replaceChild(newButton, button);
+            
+            newButton.addEventListener('click', function() {
                 console.log('Đóng modal xe bằng nút Hủy');
                 modal.style.display = 'none';
                 if (carForm) carForm.reset();
@@ -515,7 +523,11 @@ function setupCarModal() {
     
     // Xử lý submit form
     if (carForm) {
-        carForm.addEventListener('submit', function(e) {
+        // Xóa event listener cũ nếu có
+        const newCarForm = carForm.cloneNode(true);
+        carForm.parentNode.replaceChild(newCarForm, carForm);
+        
+        newCarForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             // Lấy dữ liệu từ form
@@ -555,8 +567,8 @@ function setupCarModal() {
             modal.style.display = 'none';
             
             // Reset form và xóa ID đang chỉnh sửa
-            carForm.reset();
-            delete carForm.dataset.editId;
+            this.reset();
+            delete this.dataset.editId;
             
             // Cập nhật lại danh sách xe
             displayCarsList();
@@ -645,7 +657,11 @@ function setupRentalModal() {
     // Đóng modal khi click vào nút đóng
     const closeBtn = modal.querySelector('.close');
     if (closeBtn) {
-        closeBtn.addEventListener('click', function() {
+        // Xóa event listener cũ nếu có
+        const newCloseBtn = closeBtn.cloneNode(true);
+        closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+        
+        newCloseBtn.addEventListener('click', function() {
             console.log('Đóng modal đơn thuê bằng nút đóng');
             modal.style.display = 'none';
             rentalForm.reset();
@@ -655,7 +671,11 @@ function setupRentalModal() {
     // Đóng modal khi click vào nút hủy
     const cancelBtn = modal.querySelector('.close-modal');
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
+        // Xóa event listener cũ nếu có
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        
+        newCancelBtn.addEventListener('click', function() {
             console.log('Đóng modal đơn thuê bằng nút hủy');
             modal.style.display = 'none';
             rentalForm.reset();
@@ -673,13 +693,16 @@ function setupRentalModal() {
     
     // Xử lý submit form
     if (rentalForm) {
-        rentalForm.addEventListener('submit', function(e) {
+        // Xóa event listener cũ nếu có
+        const newRentalForm = rentalForm.cloneNode(true);
+        rentalForm.parentNode.replaceChild(newRentalForm, rentalForm);
+        
+        newRentalForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
             try {
                 // Kiểm tra các trường bắt buộc
-                const requiredFields = [];
-                // const requiredFields = ['rentalId', 'customerName', 'rentalCarName', 'startDate', 'endDate'];
+                const requiredFields = ['rentalId', 'customerName', 'rentalCarName', 'startDate', 'endDate'];
                 const missingFields = requiredFields.filter(field => !document.getElementById(field)?.value);
                 
                 if (missingFields.length > 0) {
@@ -709,7 +732,7 @@ function setupRentalModal() {
                 const rentalData = {
                     id: document.getElementById('rentalId').value,
                     customerName: document.getElementById('customerName').value,
-                    carName: document.getElementById('rentalCarName').value, // Đổi tên từ rentalCarName
+                    carName: document.getElementById('rentalCarName').value,
                     startDate: document.getElementById('startDate').value,
                     endDate: document.getElementById('endDate').value,
                     totalAmount: document.getElementById('totalAmount').value,
@@ -736,12 +759,6 @@ function setupRentalModal() {
                         return;
                     }
                 } else {
-                    // Kiểm tra trùng ID nếu thêm mới
-                    // if (rentals.some(r => r.id === rentalData.id)) {
-                    //     alert(`Mã đơn ${rentalData.id} đã tồn tại! Vui lòng sử dụng mã khác.`);
-                    //     return;
-                    // }
-                    
                     // Thêm đơn thuê mới
                     console.log('Thêm đơn thuê mới:', rentalData.id);
                     rentals.push(rentalData);
@@ -755,8 +772,8 @@ function setupRentalModal() {
                 modal.style.display = 'none';
                 
                 // Reset form và xóa ID đang chỉnh sửa
-                rentalForm.reset();
-                delete rentalForm.dataset.editId;
+                this.reset();
+                delete this.dataset.editId;
                 
                 // Cập nhật lại danh sách đơn thuê
                 displayRentalsList('all');
@@ -813,11 +830,11 @@ function displayRentalsList(filter = 'all') {
             <td>${rental.endDate}</td>
             <td>${Number(rental.totalAmount).toLocaleString()} VNĐ</td>
             <td><span class="status ${rental.status}">${getRentalStatusText(rental.status)}</span></td>
-            <td class="actions">
+        <td class="actions">
                 <button class="btn-icon btn-view" onclick="viewRental('${rental.id}')"><i class="fas fa-eye"></i></button>
                 <button class="btn-icon btn-edit" onclick="editRental('${rental.id}')"><i class="fas fa-edit"></i></button>
                 <button class="btn-icon btn-delete" onclick="deleteRental('${rental.id}')"><i class="fas fa-trash"></i></button>
-            </td>
+        </td>
         </tr>
     `;
     }).join('');
@@ -919,9 +936,9 @@ function editRental(rentalId) {
         
         if (!modal || !rentalForm) {
             console.error('Không tìm thấy modal hoặc form đơn thuê');
-            return;
-        }
-        
+        return;
+    }
+    
         // Cập nhật tiêu đề modal nếu có
         const modalTitle = modal.querySelector('h2');
         if (modalTitle) {
@@ -1003,7 +1020,7 @@ function deleteCar(carId) {
         localStorage.setItem('cars', JSON.stringify(updatedCars));
         displayCarsList();
         alert('Đã xóa xe thành công!');
-        updateDashboardStats();
+    updateDashboardStats();
     }
 }
 
@@ -1171,7 +1188,7 @@ function setupCarActions() {
                 updateDashboardStats();
             }
         });
-    });
+        });
 }
 
 // Mở modal để chỉnh sửa xe
@@ -1453,7 +1470,7 @@ function showReport(type) {
             console.log('Gọi hàm tạo báo cáo sau 100ms');
             generateReport(type);
         }, 100);
-    } else {
+        } else {
         console.error('Không tìm thấy form báo cáo:', type);
     }
 }
@@ -1681,7 +1698,7 @@ function generateStatusReport() {
     
     // Tạo giao diện báo cáo
     let html = '<div class="report-container">';
-    html += '<h3>Báo cáo trạng thái xe</h3>';
+    //html += '<h3>Báo cáo trạng thái xe</h3>';
     
     // Hiển thị báo cáo dạng biểu đồ thanh ngang
     html += '<div class="status-chart">';
@@ -1777,34 +1794,34 @@ function getReportTypeText(type) {
 
 // Khởi tạo dữ liệu mẫu
 function initializeSampleData() {
-    // Dữ liệu xe mẫu
+    // Khởi tạo dữ liệu xe mẫu
     const sampleCars = [
         {
-            id: 1,
-            name: "Toyota Camry",
-            type: "5 chỗ hạng thường",
+            id: 'CAR001',
+            name: 'Toyota Camry',
+            type: '5 chỗ hạng sang',
             year: 2023,
-            plate: "51A-12345",
-            color: "#000000",
-            status: "available"
+            plate: '30A-12345',
+            color: 'Đen',
+            status: 'available'
         },
         {
-            id: 2,
-            name: "Honda Civic",
-            type: "5 chỗ hạng thường",
+            id: 'CAR002',
+            name: 'Honda Civic',
+            type: '5 chỗ hạng thường',
             year: 2022,
-            plate: "51A-54321",
-            color: "#FF0000",
-            status: "rented"
+            plate: '30B-67890',
+            color: 'Trắng',
+            status: 'rented'
         },
         {
-            id: 3,
-            name: "Mazda CX-5",
-            type: "5 chỗ hạng sang",
-            year: 2021,
-            plate: "51A-67890",
-            color: "#FFFFFF",
-            status: "maintenance"
+            id: 'CAR003',
+            name: 'Mazda CX-5',
+            type: '7 chỗ hạng sang',
+            year: 2023,
+            plate: '30C-13579',
+            color: 'Xám',
+            status: 'maintenance'
         }
     ];
 
@@ -1814,7 +1831,7 @@ function initializeSampleData() {
             id: "R001",
             customerName: "Nguyễn Văn A",
             carName: "Toyota Camry",
-            carId: "1",
+            carId: "110231023",
             startDate: "2024-02-20",
             endDate: "2024-02-25",
             totalAmount: 2500000,

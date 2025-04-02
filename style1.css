@@ -166,8 +166,8 @@ body {
 }
 
 .sidebar-logo {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
 }
 
@@ -186,8 +186,8 @@ body {
 }
 
 .user-avatar {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
 }
 
@@ -1109,7 +1109,7 @@ body {
     height: 30px;
     background-color: #ecf0f1;
     border-radius: 6px;
-    overflow: hidden;
+        overflow: hidden;
     width: 100%;
     position: relative;
 }
@@ -1171,7 +1171,7 @@ body {
 
 .bar-item {
     display: flex;
-    flex-direction: column;
+        flex-direction: column;
     align-items: center;
     width: 80px;
     position: relative;
